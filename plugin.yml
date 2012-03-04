@@ -1,0 +1,10 @@
+name: MaxiWorld
+main: me.daddychurchill.MaxiWorld.MaxiWorld
+version: 0.5
+load: startup
+author: DaddyChurchill
+commands:
+  maxiworld:
+    description: Sends you to the MaxiWorld
+    usage: /maxiworld
+    
