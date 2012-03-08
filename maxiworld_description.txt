@@ -3,13 +3,17 @@
 MaxiWorld came from a simple question from my kids: What if the blocks were bigger? 
 I was kind of busy with CityWorld/Conurbation at the time but here is the answer to that question finally.
 
+{{http://dev.bukkit.org/media/images/39/277/2012-03-07_19.37.18.jpg|Smile Kids!}}
+
 ===== //Version 0.50// ===== 
 ,,//(sometimes there is a delay in getting the new version of the plugin through the approval process, if the above version isn't available check back in an hour or so)//,,
  
 === Beta ===
-I am not sure what else to do with this plugin so this might be all it ever is, only time will tell.
-Consider it a "novelty world" and have fun.
-Feel free to add your comments to them or add a new thread, thanks.
+This is a "simple" world generator that creates a MineCraft like world with hills, lakes and trees with one twist: everything is a bit bigger. 
+Specifically every block is four times taller, or if you really want to feel like an ant you can configure the world to be eight times larger. 
+Mind you using the eight times bigger mode really causes the world to slow down. 
+I am not sure what else to do with this plugin so this might be all it ever is, only time will tell. 
+Consider it a "novelty world" and have fun. Feel free to add your comments to them or add a new thread, thanks.
 
 ==== Technical info ====
 * v0.50 Initial release
