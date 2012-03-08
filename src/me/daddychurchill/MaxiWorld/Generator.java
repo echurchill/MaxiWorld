@@ -5,153 +5,243 @@ import java.util.Random;
 import me.daddychurchill.MaxiWorld.Support.ByteChunk;
 import me.daddychurchill.MaxiWorld.Support.RealChunk;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.TreeType;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.util.noise.NoiseGenerator;
-import org.bukkit.util.noise.SimplexOctaveGenerator;
+import org.bukkit.util.noise.SimplexNoiseGenerator;
 
 public class Generator {
 	private World world;
 	private WorldConfig config;
 	
-	protected int specialBlockOdds; // 1/n chance that there is minerals on this level
-	protected int specialsPerLayer; // number of minerals per layer
-	protected int bottomLevel; // how thick is the bottom bit
-	protected int middleThickness; // how thick is the middle bit
-	protected int liquidLevel; // how thick is the water bit
-	protected int flowerOdds = 6; // 1/n chance that there is a flower on the grass, if there isn't a tree else make some tall grass
-	protected TreeType treeType;
-	protected int treesPerChunk;
+	private int stoneThickness; // how thick is the stone bit
+	private int dirtThickness; // how thick is the dirt bit
+	private int waterLevel; // how thick is the water bit
 	
-	protected byte bottomMaterial; // what is the stone made of?
-	protected byte middleMaterial; // what is dirt made of?
-	protected byte topMaterial; // what is grass made of?
-	protected byte liquidBaseMaterial; // what is sand made of?
-	protected byte liquidMaterial; // what is the liquid made of?
-	protected byte bladesMaterial; // what is a blade of grass made of?
-	protected byte flowerMaterial; // what is a flower made of?
+	private double horizontalFactor;
+	private double verticalFactor;
 	
-	protected int mineralId; // for later use in the populator
-	protected int fertileId;
-	protected int airId; 
+	private double oddsForAnOre = 0.050;
+	private double oddsForATree = 0.010;
 	
-	protected int octives = 3;
-	protected double xFactor = 1.0;
-	protected double zFactor = 1.0;
-	protected double frequency = 0.5;
-	protected double amplitude = 0.5;
-	protected double hScale = 1.0 / 64.0;
-	protected double vScale = 16.0;
+	private int blocksPerBlock;
+	private int xBlockHeight;
+	private int zBlockHeight;
 	
-	private SimplexOctaveGenerator noiseMaker;
+	private SimplexNoiseGenerator noiseMaker;
 	
-	public Generator(World world, WorldConfig config) {
+	public Generator(World aWorld, WorldConfig aConfig) {
 		super();
-		this.world = world;
-		this.config = config;
+		this.world = aWorld;
+		this.config = aConfig;
 		
 		long seed = world.getSeed();
-		Random random = new Random(seed);
-		noiseMaker = new SimplexOctaveGenerator(seed, octives);
+		noiseMaker = new SimplexNoiseGenerator(seed);
 		
-		specialBlockOdds = random.nextInt(3) + 1;
-		specialsPerLayer = random.nextInt(20) + 10;
-		bottomLevel = random.nextInt(32) + 48;
-		liquidLevel = bottomLevel + random.nextInt(8) - 4;
-		middleThickness = random.nextInt(5) + 1;
-		treeType = random.nextBoolean() ? TreeType.BIRCH : TreeType.TREE;
-		treesPerChunk = 2;
+		blocksPerBlock = config.getBlockSize(world);
 		
-		xFactor = calcRandomRange(random, 0.75, 1.25);
-		zFactor = calcRandomRange(random, 0.75, 1.25);
-		frequency = calcRandomRange(random, 0.40, 0.60);
-		amplitude = calcRandomRange(random, 0.40, 0.60);
-		vScale = calcRandomRange(random, 13.0, 19.0);
+		horizontalFactor = blocksPerBlock * 20.0;
+		verticalFactor = 7.0 * (8.0 / (double) blocksPerBlock);
 		
-		bottomMaterial = (byte) Material.STONE.getId();
-		middleMaterial = (byte) Material.DIRT.getId();
-		topMaterial = (byte) Material.GRASS.getId();
-		liquidBaseMaterial = (byte) Material.SAND.getId();
-		liquidMaterial = (byte) Material.STATIONARY_WATER.getId();
+		xBlockHeight = ByteChunk.chunkWidth / blocksPerBlock;
+		zBlockHeight = ByteChunk.chunkWidth / blocksPerBlock;
 		
-		mineralId = bottomMaterial;
-		fertileId = topMaterial;
-		airId = Material.AIR.getId();
+		stoneThickness = 1;
+		dirtThickness = 1;
+		waterLevel = (int) verticalFactor - stoneThickness - dirtThickness + 1;
 	}
 	
-	protected int getHeight(double x, double z) {
-		return NoiseGenerator.floor(noiseMaker.noise(x, z, frequency, amplitude) * vScale) + bottomLevel;
+	private int getGroundSurfaceY(int chunkX, int chunkZ, int blockX, int blockZ) {
+		double x = chunkX * blocksPerBlock + blockX;
+		double z = chunkZ * blocksPerBlock + blockZ;
+		double noiseLevel = noiseMaker.noise(x / horizontalFactor, z / horizontalFactor);
+		return stoneThickness + dirtThickness + waterLevel + NoiseGenerator.floor(noiseLevel * verticalFactor);
 	}
-
-	protected double calcRandomRange(Random random, double min, double max) {
-		return min + random.nextDouble() * (max - min);
+	
+//	public boolean ifATree(int chunkX, int chunkZ, int blockX, int blockZ) {
+//		double x = chunkX * blocksPerBlock + blockX;
+//		double z = chunkZ * blocksPerBlock + blockZ;
+//		return (noiseMaker.noise(x, z) + 1) / 2 < oddsForATree;
+//	}
+	
+	private boolean ifATree(Random random) {
+		return random.nextDouble() < oddsForATree;
+	}
+	
+	private boolean ifAnOre(Random random) {
+		return random.nextDouble() < oddsForAnOre;
 	}
 	
 	public void generateChunk(ByteChunk chunk, Random random, int chunkX, int chunkZ) {
-		for (int x = 0; x < 16; x++) {
-			for (int z = 0; z < 16; z++) {
-				int y = getHeight((chunkX * 16 + x) / xFactor, (chunkZ * 16 + z) / zFactor);
-				chunk.setBlocks(x, 1, y - middleThickness, z, bottomMaterial);
-				chunk.setBlocks(x, y - middleThickness, y, z, middleMaterial);
-				if (y < liquidLevel) {
-					chunk.setBlock(x, y, z, liquidBaseMaterial);
-					chunk.setBlocks(x, y + 1, liquidLevel, z, liquidMaterial);
-				} else
-					chunk.setBlock(x, y, z, topMaterial);
-			}
-		}
-	}
-
-	public void populateBlocks(RealChunk chunk, Random random, int chunkX, int chunkZ) {
-		populateSpecials(chunk, random, chunkX, chunkZ);
-		populateTrees(chunk, random, chunkX, chunkZ);
-	}
-	
-	protected void populateSpecials(RealChunk chunk, Random random, int chunkX, int chunkZ) {
-
-		// sprinkle minerals/foliage for each y layer, one of millions of ways to do this!
-		for (int y = 1; y < 127; y++) {
-			if (random.nextInt(specialBlockOdds) == 0) {
-				for (int i = 0; i < specialsPerLayer; i++) {
-					Block block = chunk.getBlock(random.nextInt(16), y, random.nextInt(16));
-					int id = block.getTypeId();
-					if (id != airId) {
-						
-						// Transmutation?
-						if (id == mineralId)
-							populateMineral(block, random, y);
+		for (int x = 0; x < xBlockHeight; x++) {
+			for (int z = 0; z < zBlockHeight; z++) {
+				int ySurface = getGroundSurfaceY(chunkX, chunkZ, x, z);
+				//MaxiWorld.log.info("ySurface = " + ySurface);
+				
+				int xOrigin = x * blocksPerBlock;
+				int zOrigin = z * blocksPerBlock;
+				
+				for (int y = 0; y < ySurface + 1; y++) {
+					int yOrigin = y * blocksPerBlock;
+					
+					// generate the layers
+					if (y >= 0 && y < ySurface - dirtThickness) {
+						generateStoneBlock(chunk, xOrigin, yOrigin, zOrigin, random);
+					} else if (y >= ySurface - dirtThickness && y < ySurface) {
+						generateDirtBlock(chunk, xOrigin, yOrigin, zOrigin);
+					} else if (y == ySurface) {
+						if (y < waterLevel) {
+							generateSandBlock(chunk, xOrigin, yOrigin, zOrigin);
+							for (int yLake = y + 1; yLake < waterLevel; yLake++)
+								generateWaterBlock(chunk, xOrigin, yLake * blocksPerBlock, zOrigin);
+						} else {
+							generateGrassBlock(chunk, xOrigin, yOrigin, zOrigin);
+							if (ifATree(random))
+								generateTrunkBlock(chunk, xOrigin, (y + 1) * blocksPerBlock, zOrigin);
+						}
 					}
 				}
 			}
 		}
 	}
 	
-	protected void populateMineral(Block block, Random random, int atY) {
-		block.setTypeId(pickRandomMineralAt(random, atY).getId(), false);
+	private byte byteBase = (byte) Material.BEDROCK.getId();
+	private byte byteStone = (byte) Material.STONE.getId();
+	private byte byteDirt = (byte) Material.DIRT.getId();
+	private byte byteGrass = (byte) Material.GRASS.getId();
+	private byte byteSand = (byte) Material.SAND.getId();
+	private byte byteWater = (byte) Material.STATIONARY_WATER.getId();
+	private byte byteTrunk = (byte) Material.LOG.getId();
+	private byte byteLeaves = (byte) Material.LEAVES.getId();
+	
+	private void generateStoneBlock(ByteChunk chunk, int x, int y, int z, Random random) {
+		if (y == 0) {
+			chunk.setBlocks(x, x + blocksPerBlock, 0, 1, z, z + blocksPerBlock, byteBase);
+			chunk.setBlocks(x, x + blocksPerBlock, y + 1, y + blocksPerBlock, z, z + blocksPerBlock, byteStone);
+		} else
+			chunk.setBlocks(x, x + blocksPerBlock, y, y + blocksPerBlock, z, z + blocksPerBlock, byteStone);
+		
+		if (ifAnOre(random))
+			chunk.setBlocks(x + 1, x + blocksPerBlock - 1, y + 1, y + blocksPerBlock - 1, z + 1, z + blocksPerBlock - 1, pickRandomMineralAt(random, y));
+	}
+
+	private void generateDirtBlock(ByteChunk chunk, int x, int y, int z) {
+		chunk.setBlocks(x, x + blocksPerBlock, y, y + blocksPerBlock, z, z + blocksPerBlock, byteDirt);
+	}
+
+	private void generateGrassBlock(ByteChunk chunk, int x, int y, int z) {
+		chunk.setBlocks(x, x + blocksPerBlock, y, y + blocksPerBlock - 1, z, z + blocksPerBlock, byteDirt);
+		chunk.setBlocks(x, x + blocksPerBlock, y + blocksPerBlock - 1, y + blocksPerBlock, z, z + blocksPerBlock, byteGrass);
+	}
+
+	private void generateSandBlock(ByteChunk chunk, int x, int y, int z) {
+		chunk.setBlocks(x, x + blocksPerBlock, y, y + blocksPerBlock, z, z + blocksPerBlock, byteSand);
+	}
+
+	private void generateWaterBlock(ByteChunk chunk, int x, int y, int z) {
+		chunk.setBlocks(x, x + blocksPerBlock, y, y + blocksPerBlock, z, z + blocksPerBlock, byteWater);
 	}
 	
-	protected void populateTrees(RealChunk chunk, Random random, int chunkX, int chunkZ) {
-		
-		// plant lots of trees
-		int worldX = chunk.chunkX * chunk.width; // these use the chunk's world relative location instead..
-		int worldZ = chunk.chunkZ * chunk.width; // ..of well's as generateTree needs world coordinates
-		for (int t = 0; t < treesPerChunk; t++) {
-			int centerX = worldX + random.nextInt(16);
-			int centerZ = worldZ + random.nextInt(16);
-			int centerY = world.getHighestBlockYAt(centerX, centerZ);
-			Block rootBlock = world.getBlockAt(centerX, centerY - 1, centerZ);
-			if (rootBlock.getTypeId() == fertileId) {
-				Location treeAt = rootBlock.getLocation().add(0, 1, 0);
-				world.generateTree(treeAt, treeType);
+	private void generateTrunkBlock(ByteChunk chunk, int x, int y, int z) {
+		chunk.setBlocks(x, x + blocksPerBlock, y, y + blocksPerBlock, z, z + blocksPerBlock, byteTrunk);
+	}
+
+	private int trunkHeight = 5;
+	private int leavesStart = 2;
+	
+	public void populateBlocks(RealChunk chunk, Random random, int chunkX, int chunkZ) {
+		for (int x = 0; x < xBlockHeight; x++) {
+			for (int z = 0; z < zBlockHeight; z++) {
+				
+				// surface features are actually in the block above the surface
+				int y = getGroundSurfaceY(chunkX, chunkZ, x, z) + 1;
+				
+				// calculate real coordinates
+				int xOrigin = x * blocksPerBlock;
+				int zOrigin = z * blocksPerBlock;
+				int yOrigin = y * blocksPerBlock;
+				
+				// what is here?
+				Material surfaceFeature = chunk.getMaterial(xOrigin, yOrigin, zOrigin);
+				
+				// got a tree?
+				if (surfaceFeature.getId() == byteTrunk) {
+					
+					// normalize to the world as a whole
+					xOrigin = chunkX * chunk.width + xOrigin;
+					zOrigin = chunkZ * chunk.width + zOrigin;
+					
+					// go up the trunk
+					for (int yTrunk = 1; yTrunk < trunkHeight + leavesStart - 1; yTrunk++) {
+						
+						// where are we actually?
+						yOrigin = (yTrunk + y) * blocksPerBlock;
+						
+						// in trunk range?
+						if (yTrunk < trunkHeight)
+							generateTrunkBlock(world, xOrigin, yOrigin, zOrigin);
+						
+						// in leaves range?
+						if (yTrunk >= leavesStart) {
+							switch (yTrunk - leavesStart) {
+							case 0:
+								generateLeavesLayer(world, random, xOrigin, yOrigin, zOrigin, 2, 0.30);
+								break;
+							case 1:
+								generateLeavesLayer(world, random, xOrigin, yOrigin, zOrigin, 2, 0.50);
+								break;
+							case 2:
+								generateLeavesLayer(world, random, xOrigin, yOrigin, zOrigin, 1, 0.40);
+								break;
+							default:
+								generateLeavesLayer(world, random, xOrigin, yOrigin, zOrigin, 1, 0.10);
+								break;
+							}
+						}
+					}
+				}
 			}
 		}
 	}
 	
-	protected Material pickRandomMineralAt(Random random, int y) {
-		// a VERY VERY rough version of http://www.minecraftwiki.net/wiki/Ore
+	private void generateLeavesLayer(World world, Random random, int xOrigin, int yOrigin, int zOrigin, int range, double oddsOfCorner) {
+		for (int xLeaves = -range; xLeaves <= range; xLeaves++) {
+			for (int zLeaves = -range; zLeaves <= range; zLeaves++) {
+				if (!((xLeaves == -range && zLeaves == -range) ||
+					  (xLeaves == -range && zLeaves == range) ||
+					  (xLeaves == range && zLeaves == -range) ||
+					  (xLeaves == range && zLeaves == range)) ||
+					  random.nextDouble() < oddsOfCorner)
+					generateLeavesBlock(world, xOrigin - xLeaves * blocksPerBlock, yOrigin, zOrigin - zLeaves * blocksPerBlock);
+			}
+		}
+	}
+	
+	private void generateLeavesBlock(World world, int worldX, int worldY, int worldZ) {
+		generateRealBlock(world, worldX, worldY, worldZ, byteLeaves);
+	}
+	
+	private void generateTrunkBlock(World world, int worldX, int worldY, int worldZ) {
+		generateRealBlock(world, worldX, worldY, worldZ, byteTrunk);
+	}
+
+	private void generateRealBlock(World world, int worldX, int worldY, int worldZ, int typeId) {
+		Block block = world.getBlockAt(worldX, worldY, worldZ);
+		if (block.isEmpty()) {
+			for (int x = 0; x < blocksPerBlock; x++) {
+				for (int y = 0; y < blocksPerBlock; y++) {
+					for (int z = 0; z < blocksPerBlock; z++) {
+						block = world.getBlockAt(worldX + x, worldY + y, worldZ + z);
+						block.setTypeIdAndData(typeId, (byte) 0, false);
+					}
+				}
+			}
+		}
+	}
+	
+	private byte pickRandomMineralAt(Random random, int y) {
+		// a VERY VERY VERY rough version of http://www.minecraftwiki.net/wiki/Ore
 		if (y <= 16)
 			return pickRandomMineral(random, 6);
 		else if (y <= 34)
@@ -162,20 +252,27 @@ public class Generator {
 			return pickRandomMineral(random, 1);
 	}
 	
-	protected Material pickRandomMineral(Random random, int max) {
+	private byte oreIron = (byte) Material.IRON_ORE.getId();
+	private byte oreGold = (byte) Material.GOLD_ORE.getId();
+	private byte oreLapis = (byte) Material.LAPIS_ORE.getId();
+	private byte oreRedstone = (byte) Material.REDSTONE_ORE.getId();
+	private byte oreDiamond = (byte) Material.DIAMOND_ORE.getId();
+	private byte oreCoal = (byte) Material.COAL_ORE.getId();
+	
+	private byte pickRandomMineral(Random random, int max) {
 		switch (random.nextInt(max)) {
 		case 1:
-			return Material.IRON_ORE;
+			return oreIron;
 		case 2:
-			return Material.GOLD_ORE;
+			return oreGold;
 		case 3:
-			return Material.LAPIS_ORE;
+			return oreLapis;
 		case 4:
-			return Material.REDSTONE_ORE;
+			return oreRedstone;
 		case 5:
-			return Material.DIAMOND_ORE;
+			return oreDiamond;
 		default:
-			return Material.COAL_ORE;
+			return oreCoal;
 		}
 	}
 }

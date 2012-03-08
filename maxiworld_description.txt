@@ -3,11 +3,11 @@
 MaxiWorld came from a simple question from my kids: What if the blocks were bigger? 
 I was kind of busy with CityWorld/Conurbation at the time but here is the answer to that question finally.
 
-===== //Version 0.5// ===== 
+===== //Version 0.50// ===== 
 ,,//(sometimes there is a delay in getting the new version of the plugin through the approval process, if the above version isn't available check back in an hour or so)//,,
  
 === Beta ===
-I am not sure what else to do with this plug in so this might be all it ever is, only time will tell.
+I am not sure what else to do with this plugin so this might be all it ever is, only time will tell.
 Consider it a "novelty world" and have fun.
 Feel free to add your comments to them or add a new thread, thanks.
 
@@ -20,7 +20,7 @@ Permissions for MaxiWorld command (used your favorite perms plugin)
 Config option file is now generated when MaxiWorld runs. 
 These options only affect "new generation" and are not world specific (yet). 
 Changing them after a world has been generated will produce some odd results at times.
-* Global.BiggerBlocks (defaults to false) //generates 8x8x8 blocks instead of 4x4x4// 
+* Global.BlockSize (defaults to 4) //currently you can pick 4 or 8, the later makes things a bit slower// 
 
 ----
 === Installing ===
