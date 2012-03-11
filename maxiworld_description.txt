@@ -8,6 +8,8 @@ I was kind of busy with CityWorld/Conurbation at the time but here is the answer
 ===== //Version 0.51// ===== 
 ,,//(sometimes there is a delay in getting the new version of the plugin through the approval process, if the above version isn't available check back in an hour or so)//,,
  
+//(This should support the newer "taller" chunks but there might an issue or two)//
+
 === Beta ===
 This is a "simple" world generator that creates a MineCraft like world with hills, lakes and trees with one twist: everything is a bit bigger. 
 Specifically every block is four times taller, or if you really want to feel like an ant you can configure the world to be eight times larger. 
