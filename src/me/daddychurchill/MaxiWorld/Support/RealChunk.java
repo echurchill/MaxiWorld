@@ -17,7 +17,7 @@ public class RealChunk {
 	public int chunkX;
 	public int chunkZ;
 	private boolean doPhysics;
-	public int width = ByteChunk.chunkWidth;
+	public int width = ByteChunk.chunksBlockWidth;
 	public int height;
 
 	public RealChunk(World world, Chunk chunk) {

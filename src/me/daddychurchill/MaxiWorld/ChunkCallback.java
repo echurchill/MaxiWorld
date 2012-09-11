@@ -42,7 +42,7 @@ public class ChunkCallback extends ChunkGenerator {
 	}
 	
 	@Override
-	public byte[] generate(World world, Random random, int chunkX, int chunkZ) {
+	public byte[][] generateBlockSections(World world, Random random, int chunkX, int chunkZ, BiomeGrid biomes) {
 		
 		// who makes what?
 		if (generators == null)
@@ -53,6 +53,7 @@ public class ChunkCallback extends ChunkGenerator {
 		
 		// figure out what everything looks like
 		generators.generateChunk(byteChunk, random, chunkX, chunkZ);
+		generators.generateBiome(biomes);
 		 
 		// let minecraft/bukkit do it's thing
 		return byteChunk.blocks;

@@ -5,11 +5,9 @@ I was kind of busy with CityWorld/Conurbation at the time but here is the answer
 
 {{http://dev.bukkit.org/media/images/39/277/2012-03-07_19.37.18.jpg|Smile Kids!}}
 
-===== //Version 0.51// ===== 
+===== //Version 0.53// ===== 
 ,,//(sometimes there is a delay in getting the new version of the plugin through the approval process, if the above version isn't available check back in an hour or so)//,,
  
-//(This should support the newer "taller" chunks but there might an issue or two)//
-
 === Beta ===
 This is a "simple" world generator that creates a MineCraft like world with hills, lakes and trees with one twist: everything is a bit bigger. 
 Specifically every block is four times taller, or if you really want to feel like an ant you can configure the world to be eight times larger. 
@@ -18,8 +16,10 @@ I am not sure what else to do with this plugin so this might be all it ever is, 
 Consider it a "novelty world" and have fun. Feel free to add your comments to them or add a new thread, thanks.
 
 ==== Technical info ====
+* v0.53 Added some logs into the leaves to keep them happy when people start hacking
 * v0.51 1.2.3-R0.2 Happy and Fixed a few string and permission issues
 * v0.50 Initial release
+* v0.49 1.1 R6 Happy
 
 Permissions for MaxiWorld command (used your favorite perms plugin)
 * MaxiWorld.command (defaults to op)

@@ -12,8 +12,8 @@
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
         <javaElement handleIdentifier="=MaxiWorld/src"/>
-        <file path="/MaxiWorld/.project"/>
         <file path="/MaxiWorld/.classpath"/>
+        <file path="/MaxiWorld/.project"/>
         <file path="/MaxiWorld/readme"/>
         <file path="/MaxiWorld/plugin.yml"/>
     </selectedElements>

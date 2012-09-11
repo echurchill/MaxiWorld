@@ -1,6 +1,6 @@
 name: MaxiWorld
 main: me.daddychurchill.MaxiWorld.MaxiWorld
-version: 0.51
+version: 0.53
 load: startup
 author: DaddyChurchill
 commands:

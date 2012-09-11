@@ -7,7 +7,9 @@ import me.daddychurchill.MaxiWorld.Support.RealChunk;
 
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
+import org.bukkit.generator.ChunkGenerator.BiomeGrid;
 import org.bukkit.util.noise.NoiseGenerator;
 import org.bukkit.util.noise.SimplexNoiseGenerator;
 
@@ -40,12 +42,14 @@ public class Generator {
 		noiseMaker = new SimplexNoiseGenerator(seed);
 		
 		blocksPerBlock = config.getBlockSize(world);
+		if (world.getMaxHeight() <= 128)
+			blocksPerBlock = 4;
 		
 		horizontalFactor = blocksPerBlock * 20.0;
 		verticalFactor = 7.0 * (8.0 / (double) blocksPerBlock);
 		
-		xBlockHeight = ByteChunk.chunkWidth / blocksPerBlock;
-		zBlockHeight = ByteChunk.chunkWidth / blocksPerBlock;
+		xBlockHeight = ByteChunk.chunksBlockWidth / blocksPerBlock;
+		zBlockHeight = ByteChunk.chunksBlockWidth / blocksPerBlock;
 		
 		stoneThickness = 1;
 		dirtThickness = 1;
@@ -102,6 +106,14 @@ public class Generator {
 						}
 					}
 				}
+			}
+		}
+	}
+	
+	public void generateBiome(BiomeGrid biomes) {
+		for (int x = 0; x < ByteChunk.chunksBlockWidth; x++) {
+			for (int z = 0; z < ByteChunk.chunksBlockWidth; z++) {
+				biomes.setBiome(x, z, Biome.FOREST);
 			}
 		}
 	}
@@ -219,13 +231,32 @@ public class Generator {
 	}
 	
 	private void generateLeavesBlock(World world, int worldX, int worldY, int worldZ) {
-		generateRealBlock(world, worldX, worldY, worldZ, byteLeaves);
+		generateRealBlock(world, worldX, worldY, worldZ, byteLeaves, byteTrunk);
 	}
 	
 	private void generateTrunkBlock(World world, int worldX, int worldY, int worldZ) {
 		generateRealBlock(world, worldX, worldY, worldZ, byteTrunk);
 	}
 
+	private void generateRealBlock(World world, int worldX, int worldY, int worldZ, int typeId, int coreId) {
+		Block block = world.getBlockAt(worldX, worldY, worldZ);
+		if (block.isEmpty()) {
+			for (int x = 0; x < blocksPerBlock; x++) {
+				for (int y = 0; y < blocksPerBlock; y++) {
+					for (int z = 0; z < blocksPerBlock; z++) {
+						block = world.getBlockAt(worldX + x, worldY + y, worldZ + z);
+						if (x == 0 || x == blocksPerBlock - 1 ||
+							y == 0 || y == blocksPerBlock - 1 ||
+							z == 0 || z == blocksPerBlock - 1)
+							block.setTypeIdAndData(typeId, (byte) 0, false);
+						else
+							block.setTypeIdAndData(coreId, (byte) 0, false);
+					}
+				}
+			}
+		}
+	}
+	
 	private void generateRealBlock(World world, int worldX, int worldY, int worldZ, int typeId) {
 		Block block = world.getBlockAt(worldX, worldY, worldZ);
 		if (block.isEmpty()) {
