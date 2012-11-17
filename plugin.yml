@@ -3,6 +3,7 @@ main: me.daddychurchill.MaxiWorld.MaxiWorld
 version: 0.53
 load: startup
 author: DaddyChurchill
+loadbefore: [Multiverse-Core, dimension-door, multiworld]
 commands:
   maxiworld:
     description: Sends you to the MaxiWorld
