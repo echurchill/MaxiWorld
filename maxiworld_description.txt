@@ -27,7 +27,7 @@ Permissions for MaxiWorld command (used your favorite perms plugin)
 Config option file is now generated when MaxiWorld runs. 
 These options only affect "new generation" and are not world specific (yet). 
 Changing them after a world has been generated will produce some odd results at times.
-* Global.BlockSize (defaults to 4) //currently you can pick 4 or 8, the later makes things a bit slower// 
+* Global.BlockSize (defaults to 8) //currently you can pick 4 or 8, the later makes things a bit slower// 
 
 ----
 === Installing ===

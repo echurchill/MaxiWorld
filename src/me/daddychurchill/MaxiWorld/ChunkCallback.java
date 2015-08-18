@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import me.daddychurchill.MaxiWorld.Support.ByteChunk;
-import me.daddychurchill.MaxiWorld.Support.RealChunk;
+import me.daddychurchill.MaxiWorld.Support.InitialBlocks;
+import me.daddychurchill.MaxiWorld.Support.RealBlocks;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -42,21 +42,21 @@ public class ChunkCallback extends ChunkGenerator {
 	}
 	
 	@Override
-	public byte[][] generateBlockSections(World world, Random random, int chunkX, int chunkZ, BiomeGrid biomes) {
+	public ChunkData generateChunkData(World world, Random random, int chunkX, int chunkZ, BiomeGrid biomes) {
 		
 		// who makes what?
 		if (generators == null)
 			generators = new Generator(world, config);
 		
 		// place to work
-		ByteChunk byteChunk = new ByteChunk(world, chunkX, chunkZ);
+		InitialBlocks initialBlocks = new InitialBlocks(world, createChunkData(world), chunkX, chunkZ);
 		
 		// figure out what everything looks like
-		generators.generateChunk(byteChunk, random, chunkX, chunkZ);
+		generators.generateChunk(initialBlocks, random, chunkX, chunkZ);
 		generators.generateBiome(biomes);
 		 
 		// let minecraft/bukkit do it's thing
-		return byteChunk.blocks;
+		return initialBlocks.data;
 	}
 	
 	public void populate(World world, Random random, Chunk source) {
@@ -70,7 +70,7 @@ public class ChunkCallback extends ChunkGenerator {
 		int chunkZ = source.getZ();
 		
 		// place to work
-		RealChunk realChunk = new RealChunk(world, source);
+		RealBlocks realChunk = new RealBlocks(world, source);
 		
 		// figure out what everything looks like
 		generators.populateBlocks(realChunk, random, chunkX, chunkZ);

@@ -9,7 +9,7 @@ public class WorldConfig {
 	private String worldstyle;
 	private int blockSize;
 	
-	public final static int defaultBlockSize = 4;
+	public final static int defaultBlockSize = 8;
 	
 	public WorldConfig(MaxiWorld plugin, String name, String style) {
 		super();
