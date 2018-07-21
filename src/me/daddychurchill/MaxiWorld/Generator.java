@@ -143,11 +143,11 @@ public class Generator {
 	}
 
 	private void generateWaterBlock(InitialBlocks chunk, int x, int y, int z) {
-		chunk.setBlocks(x, x + blocksPerBlock, y, y + blocksPerBlock, z, z + blocksPerBlock, Material.STATIONARY_WATER);
+		chunk.setBlocks(x, x + blocksPerBlock, y, y + blocksPerBlock, z, z + blocksPerBlock, Material.WATER);
 	}
 	
 	private void generateTrunkBlock(InitialBlocks chunk, int x, int y, int z) {
-		chunk.setBlocks(x, x + blocksPerBlock, y, y + blocksPerBlock, z, z + blocksPerBlock, Material.LOG);
+		chunk.setBlocks(x, x + blocksPerBlock, y, y + blocksPerBlock, z, z + blocksPerBlock, Material.SPRUCE_LOG);
 	}
 
 	private int trunkHeight = 5;
@@ -169,7 +169,7 @@ public class Generator {
 				Material surfaceFeature = chunk.getMaterial(xOrigin, yOrigin, zOrigin);
 				
 				// got a tree?
-				if (surfaceFeature == Material.LOG) {
+				if (surfaceFeature == Material.SPRUCE_LOG) {
 					
 					// normalize to the world as a whole
 					xOrigin = chunkX * chunk.width + xOrigin;
@@ -222,11 +222,11 @@ public class Generator {
 	}
 	
 	private void generateLeavesBlock(World world, int worldX, int worldY, int worldZ) {
-		generateRealBlock(world, worldX, worldY, worldZ, Material.LEAVES, Material.LOG);
+		generateRealBlock(world, worldX, worldY, worldZ, Material.BIRCH_LEAVES, Material.BIRCH_LOG);
 	}
 	
 	private void generateTrunkBlock(World world, int worldX, int worldY, int worldZ) {
-		generateRealBlock(world, worldX, worldY, worldZ, Material.LOG);
+		generateRealBlock(world, worldX, worldY, worldZ, Material.BIRCH_LOG);
 	}
 
 	private void generateRealBlock(World world, int worldX, int worldY, int worldZ, Material material, Material core) {

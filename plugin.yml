@@ -1,8 +1,9 @@
 name: MaxiWorld
 main: me.daddychurchill.MaxiWorld.MaxiWorld
-version: 1.00
+version: 1.13
 load: startup
 author: DaddyChurchill
+api-version: 1.13
 loadbefore: [Multiverse-Core, dimension-door, multiworld]
 commands:
   maxiworld:
