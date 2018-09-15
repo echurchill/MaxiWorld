@@ -135,7 +135,7 @@ public class Generator {
 
 	private void generateGrassBlock(InitialBlocks chunk, int x, int y, int z) {
 		chunk.setBlocks(x, x + blocksPerBlock, y, y + blocksPerBlock - 1, z, z + blocksPerBlock, Material.DIRT);
-		chunk.setBlocks(x, x + blocksPerBlock, y + blocksPerBlock - 1, y + blocksPerBlock, z, z + blocksPerBlock, Material.GRASS);
+		chunk.setBlocks(x, x + blocksPerBlock, y + blocksPerBlock - 1, y + blocksPerBlock, z, z + blocksPerBlock, Material.GRASS_BLOCK);
 	}
 
 	private void generateSandBlock(InitialBlocks chunk, int x, int y, int z) {
