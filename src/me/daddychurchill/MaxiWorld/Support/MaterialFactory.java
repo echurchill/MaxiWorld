@@ -4,10 +4,13 @@ import java.util.Random;
 
 public abstract class MaterialFactory {
 
-	public enum SkipStyles {RANDOM, SINGLE, DOUBLE};
+	public enum SkipStyles {
+		RANDOM, SINGLE, DOUBLE
+	};
+
 	public SkipStyles style;
 	protected Random rand;
-	
+
 	public MaterialFactory() {
 		super();
 		rand = null;
@@ -19,13 +22,13 @@ public abstract class MaterialFactory {
 		this.rand = rand;
 		style = pickSkipStyle();
 	}
-	
+
 	public MaterialFactory(Random rand, SkipStyles astyle) {
 		super();
 		this.rand = rand;
 		style = astyle;
 	}
-	
+
 	protected SkipStyles pickSkipStyle() {
 		switch (rand.nextInt(3)) {
 		case 1:
@@ -34,8 +37,8 @@ public abstract class MaterialFactory {
 			return SkipStyles.DOUBLE;
 		default:
 			return SkipStyles.RANDOM;
-		}		
+		}
 	}
-	
+
 	public abstract byte pickMaterial(byte primaryId, byte secondaryId, int x, int z);
 }

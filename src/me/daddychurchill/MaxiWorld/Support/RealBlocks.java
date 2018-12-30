@@ -15,7 +15,7 @@ public class RealBlocks {
 		this.chunk = chunk;
 		height = world.getMaxHeight();
 	}
-	
+
 	public void setBlock(int x, int y, int z, Material material, boolean aDoPhysics) {
 		chunk.getBlock(x, y, z).setType(material, aDoPhysics);
 	}

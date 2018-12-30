@@ -9,18 +9,18 @@ import org.bukkit.generator.ChunkGenerator.ChunkData;
 
 public class InitialBlocks {
 	public ChunkData data;
-	
+
 	public static final int chunksBlockWidth = 16;
-		
-	public InitialBlocks (World aWorld, ChunkData chunkData, int aChunkX, int aChunkZ) {
-		super();	
+
+	public InitialBlocks(World aWorld, ChunkData chunkData, int aChunkX, int aChunkZ) {
+		super();
 		data = chunkData;
 	}
-	
+
 	public void setBlock(int x, int y, int z, Material material) {
 		data.setBlock(x, y, z, material);
 	}
-	
+
 	public void setBlocks(int x1, int x2, int y1, int y2, int z1, int z2, Material material) {
 		for (int x = x1; x < x2; x++) {
 			for (int z = z1; z < z2; z++) {

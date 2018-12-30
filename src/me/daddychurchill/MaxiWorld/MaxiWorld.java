@@ -1,6 +1,5 @@
 package me.daddychurchill.MaxiWorld;
 
-
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -14,41 +13,41 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class MaxiWorld extends JavaPlugin{
-	
+public class MaxiWorld extends JavaPlugin {
+
 	public static final Logger log = Logger.getLogger("Minecraft.MaxiWorld");
-   	
-    public MaxiWorld() {
+
+	public MaxiWorld() {
 		super();
 	}
 
 	@Override
-	public ChunkGenerator getDefaultWorldGenerator(String name, String style){
+	public ChunkGenerator getDefaultWorldGenerator(String name, String style) {
 		return getChunkGenerator(name, style);
 	}
-	
+
 	@Override
 	public void onDisable() {
-		
+
 		// remember for the next time
 		saveConfig();
-		
+
 		// tell the world we are out of here
-		log.info(getDescription().getFullName() + " has been disabled" );
+		log.info(getDescription().getFullName() + " has been disabled");
 	}
-	
+
 	@Override
 	public void onEnable() {
-		
+
 		// figure out permissions and associated commands
 		PluginManager pm = getServer().getPluginManager();
 		pm.addPermission(new Permission("maxiworld.command", PermissionDefault.OP));
 		addCommand("maxiworld", new CreateCMD(this));
 
 		// configFile can be retrieved via getConfig()
-		log.info(getDescription().getFullName() + " is enabled" );
+		log.info(getDescription().getFullName() + " is enabled");
 	}
-	
+
 	private void addCommand(String keyword, CommandExecutor exec) {
 		PluginCommand cmd = getCommand(keyword);
 		if (cmd == null || exec == null) {
@@ -57,19 +56,20 @@ public class MaxiWorld extends JavaPlugin{
 			cmd.setExecutor(exec);
 		}
 	}
-	
-    // prime world support (loosely based on ExpansiveTerrain)
+
+	// prime world support (loosely based on ExpansiveTerrain)
 	public final static String WORLD_NAME = "MaxiWorld";
 	private World maxiworldPrime = null;
+
 	public World getMaxiWorld() {
-		
+
 		// created yet?
 		if (maxiworldPrime == null) {
-			
+
 			// built yet?
 			maxiworldPrime = Bukkit.getServer().getWorld(WORLD_NAME);
 			if (maxiworldPrime == null) {
-				
+
 				// if neither then create/build it!
 				WorldCreator creator = new WorldCreator(WORLD_NAME);
 				creator.environment(World.Environment.NORMAL);
@@ -79,9 +79,8 @@ public class MaxiWorld extends JavaPlugin{
 		}
 		return maxiworldPrime;
 	}
-	
+
 	private ChunkGenerator getChunkGenerator(String name, String style) {
 		return new ChunkCallback(new WorldConfig(this, name, style));
 	}
 }
-

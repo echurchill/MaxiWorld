@@ -6,15 +6,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 public class CreateCMD implements CommandExecutor {
-    private final MaxiWorld plugin;
+	private final MaxiWorld plugin;
 
-    public CreateCMD(MaxiWorld plugin)
-    {
-        this.plugin = plugin;
-    }
+	public CreateCMD(MaxiWorld plugin) {
+		this.plugin = plugin;
+	}
 
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] split) 
-    {
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] split) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			if (player.hasPermission("maxiworld.command")) {
@@ -29,5 +27,5 @@ public class CreateCMD implements CommandExecutor {
 			sender.sendMessage("This command is only usable by a player");
 			return false;
 		}
-    }
+	}
 }
